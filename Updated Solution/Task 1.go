@@ -82,7 +82,7 @@ func main() {
 	if return_id == gen_id {
 		time_received, _ := binary.Varint(receivePacketBuffer[n:]) // Using the binary encoder library, decoded the value is stored in time recieved 
 		diff := time_received.sub(time_sent)  	// Difference calculated in seconds
-		total += diff
+		total = diff
 		}
 	}
 	
