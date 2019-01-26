@@ -8,14 +8,12 @@ import (
 	
 	"flag"
 	"fmt"  
-	"os"
-	"log"
 	"time"
 	"math/rand"
+	"encoding/binary"
 
 	"github.com/scionproto/scion/go/lib/sciond"
 	"github.com/scionproto/scion/go/lib/snet"
-	"github.com/scionproto/scion/go/lib/spath"
 )
 
 // Check just ensures the error is nil, or complains and quits 
@@ -30,8 +28,9 @@ func printUsage() {
 	fmt.Println(" -s ServerSCIONAddress -c ClientSCIONAddress")
 	fmt.Println("The SCION address is specified as ISD-AS,[IP Address]:Port")
 	fmt.Println("Example SCION address 1-1,[127.0.0.1]:42002")
-
+}
 func main() {
+
 	var clientAddress string
 	var serverAddress string
 	var err error
@@ -49,14 +48,14 @@ func main() {
 	//SCION UDP socket creation
 	//Refered from hello world 
 
-	clientAddress, err := snet.AddrFromString(clientAddress)
+	client_local, err := snet.AddrFromString(clientAddress)
 	Check(err)
-	serverAddress, err := snet.AddrFromString(serverAddress)
+	remote_server, err := snet.AddrFromString(serverAddress)
 	Check(err)
 
 	dispatch := "/run/shm/dispatcher/default.sock"
 
-	snet.Init(local.IA, sciond.GetDefaultSCIONDPath(nil), dispatch)
+	snet.Init(client_local.IA, sciond.GetDefaultSCIONDPath(nil), dispatch)
 
 	scion_udpconnection, err = snet.DialSCION("udp4", client_local, remote_server)
 	check(err)
