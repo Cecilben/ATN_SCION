@@ -9,7 +9,8 @@ import (
 	"log"  //importing log for logging out errors
 	"math/rand" //importing for computing mathematical computations
 	"time"
-  "encoding/binary"
+  	"encoding/binary"
+	
 	"github.com/scionproto/scion/go/lib/snet" //importing snet packages
 	"github.com/scionproto/scion/go/lib/sciond" //importing sciond packages
 )
@@ -18,14 +19,11 @@ import (
 
 
 
-func logerror(ef error) {   //func which will be caused frequently to log out errors
-
-if ef!=nil{
-
-log.Println(ef)
+func logerror(ef error) {   //func which will be caused frequently to log out errors	
+	if ef!=nil{
+		log.Println(ef)
+	}
 }
-}
-
 
 
 
@@ -37,7 +35,7 @@ var (
  serverAddress string
  ef error
  client_local *snet.Addr
- server_destination *snet.Addr
+ remote_server *snet.Addr
  scionconnection *snet.Conn
 )
 
@@ -51,14 +49,14 @@ flag.Parse()
 
 client_local, ef = snet.AddrFromString(clientAddress)
 logerror(ef)
-server_destination, ef = snet.AddrFromString(serverAddress)
+remote_server, ef = snet.AddrFromString(serverAddress)
 logerror(ef)
 
 
 dpath := "/run/shm/dispatcher/default.sock"
 snet.Init(client_local.IA, sciond.GetDefaultSCIONDPath(nil), dpath)
 
-scionconnection, ef = snet.DialSCION("udp4", client_local, server_destination)
+scionconnection, ef = snet.DialSCION("udp4", client_local, remote_server)
 logerror(ef)
 
 receivePacketBuffer := make([]byte, 2500) //Intiating a dynamic array of respective size
@@ -88,8 +86,8 @@ seed := rand.NewSource(time.Now().UnixNano())
         ret_id, n := binary.Uvarint(receivePacketBuffer)  //decoding the id anc verifying if the packet was returned via same id
        		if ret_id == id {
        			time_received, _ := binary.Varint(receivePacketBuffer[n:]) //estimating the time received so as to compute Latency
-       			diff := time_received.sub(time_sent) 
-			//diff := (time_received - time_sent.UnixNano())
+       			//diff := time_received.sub(time_sent) 
+			diff := (time_received - time_sent.UnixNano())
 			total_number = diff
        	
        			
