@@ -88,7 +88,8 @@ seed := rand.NewSource(time.Now().UnixNano())
         ret_id, n := binary.Uvarint(receivePacketBuffer)  //decoding the id anc verifying if the packet was returned via same id
        		if ret_id == id {
        			time_received, _ := binary.Varint(receivePacketBuffer[n:]) //estimating the time received so as to compute Latency
-       			diff := (time_received - time_sent.UnixNano())
+       			diff := time_received.sub(time_sent) 
+			//diff := (time_received - time_sent.UnixNano())
 			total_number = diff
        	
        			
