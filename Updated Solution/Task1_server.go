@@ -16,12 +16,16 @@ import (
 	"github.com/scionproto/scion/go/lib/snet"
 )
 
+
+//This block has been refered from sensor fetch
 func check(e error) {
 	if e != nil {
 		log.Fatal(e)
 	}
 }
 
+
+//This block has been refered from sensor fetch
 func printUsage() {
 	fmt.Println("\ntimestamp_server -s ServerSCIONAddress")
 	fmt.Println("\tListens for incoming connections and responds back to them right away")
@@ -32,33 +36,29 @@ func main() {
 	var serverAddress string
 	var err error
 	var server *snet.Addr
-	var udpConnection *snet.Conn
+	var scion_udpconnection *snet.Conn
 
 	// Fetch arguments from command line
 	flag.StringVar(&serverAddress, "s", "", "Server SCION Address")
 	flag.Parse()
 
-	if len(serverAddress) == 0 {
-		check(fmt.Errorf("Error, server address needs to be specified with -s"))
-	}
-	else {
 	serverAddress, err = snet.AddrFromString(serverAddress)
 	check(err)
 	}
 	
-	dispatcherAddr := "/run/shm/dispatcher/default.sock"
-	snet.Init(server.IA, sciond.GetDefaultSCIONDPath(nil), dispatcherAddr)
+	dispatch := "/run/shm/dispatcher/default.sock"
+	snet.Init(server.IA, sciond.GetDefaultSCIONDPath(nil), dispatch)
 
-	udpConnection, err = snet.ListenSCION("udp4", server)
+	scion_udpconnection, err = snet.ListenSCION("udp4", server)
 	check(err)
 
 	receivePacketBuffer := make([]byte, 2500)
 	for {
-		n, clientAddress, err := udpConnection.ReadFrom(receivePacketBuffer)
+		n, clientAddress, err := scion_udpconnection.ReadFrom(receivePacketBuffer)
 		check(err)
 		time_recieved := time.Now().Unix()
 		m := binary.PutVarint(receivePacketBuffer[n:], time_recieved)            //encoding the time of reciept to packet
-		_, err = udpConnection.WriteTo(receivePacketBuffer[:n+m], clientAddress) //appending the recieved packet with the time stamp
+		_, err = scion_udpconnection.WriteTo(receivePacketBuffer[:n+m], clientAddress) //appending the recieved packet with the time stamp
 		check(err)
 
 		fmt.Println("Received connection from", clientAddress)
