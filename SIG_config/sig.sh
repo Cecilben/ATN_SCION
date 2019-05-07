@@ -1,3 +1,5 @@
+#!/bin/bash
+
 export IA=$(cat $SC/gen/ia)
 export IAd=$(cat $SC/gen/ia | sed 's/_/\:/g')
 export AS=$(cat $SC/gen/ia | cut --fields=2 --delimiter="-")
