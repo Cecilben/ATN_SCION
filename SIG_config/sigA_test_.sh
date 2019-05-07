@@ -1,3 +1,5 @@
+#!/bin/bash
+
 sudo modprobe dummy
 sudo ip link set name dummy11 dev dummy0
 sudo ip addr add 172.16.0.11/32 brd + dev dummy11 label dummy11:0
