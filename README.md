@@ -1,3 +1,3 @@
 # ATN_SCION
 
-Assignments of Advance topics in Networking
+Implement a simple SIG gatway to send and recieve images via SCION Network 
